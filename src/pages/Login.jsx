@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import api from "../api/axois";
 import { AuthContext } from "../auth/AuthContext";
-import "../styles/Login.css";
+import "../styles/login.css";
 import React from "react";
 // فالديشن بالعربي
 const schema = yup.object().shape({
