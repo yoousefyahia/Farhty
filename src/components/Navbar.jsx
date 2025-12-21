@@ -22,9 +22,16 @@ export default function Navbar({ toggleSidebar }) {
   const handleLogin = () => navigate("/login");
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-gray-800 text-white">
-      <button onClick={toggleSidebar} className="text-xl">☰</button>
+    <nav className="flex flex-row-reverse items-center p-4 bg-gray-800 text-white justify-between">
+      {/* زر الـ toggle على اليمين */}
+      <button onClick={toggleSidebar} className="text-xl">
+        ☰
+      </button>
+
+      {/* العنوان في النص */}
       <h1 className="text-lg font-bold">Dashboard</h1>
+
+      {/* زر تسجيل الدخول/الخروج على الشمال */}
       {user ? (
         <button
           onClick={handleLogout}
@@ -43,3 +50,4 @@ export default function Navbar({ toggleSidebar }) {
     </nav>
   );
 }
+

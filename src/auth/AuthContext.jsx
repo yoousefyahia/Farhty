@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useMemo } from "react";
 import Cookies from "js-cookie";
 import api from "../api/axois";
 
@@ -11,7 +11,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
-      api.get("/admin/me")
+      api
+        .get("/admin/me")
         .then((res) => setUser(res.data.data))
         .catch(() => setUser(null))
         .finally(() => setLoading(false));
@@ -20,8 +21,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // memoize الـ value لتجنب rerender غير ضروري
+  const contextValue = useMemo(() => ({ user, setUser, loading }), [user, loading]);
+
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
