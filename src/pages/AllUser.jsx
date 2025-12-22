@@ -1,24 +1,48 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import axios from "../api/axois";
-import UsersFilter from "./UsersFilter";
-import DeleteUser from "./DeletUser";
-import UpdateUser from "./UpdateUser";
-
+import UsersFilter from "../components/UsersFilter";
+import DeleteUser from "../components/DeletUser";
+import UpdateUser from "../components/UpdateUser";
+import Pagination from "../components/Pagination";
+import UserDetail from "../components/UserDetail";
+import DashboardSkeleton from "../components/DashboardSkeleton";
 export default function AllUser() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    role: "",
-    search: "",
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
   });
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [filters, setFilters] = useState({
+    role: searchParams.get("role") || "",
+    search: searchParams.get("search") || "",
+    page: Number(searchParams.get("page")) || 1,
+  });
+
+  // تحديث URL مع كل تغيير Filters
+  const updateParams = (newFilters) => {
+    setSearchParams(newFilters);
+    setFilters(newFilters);
+  };
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://app.frhty.site/api/admin/users", {
-        params: filters,
-      });
+      const res = await axios.get(
+        "https://app.frhty.site/api/admin/users",
+        { params: filters }
+      );
+
       setUsers(res.data.data.data);
+      setPagination({
+        current_page: res.data.data.current_page,
+        last_page: res.data.data.last_page,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -26,50 +50,76 @@ export default function AllUser() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    const timer = setTimeout(fetchUsers, 400); // debounce
+    return () => clearTimeout(timer);
   }, [filters]);
 
   return (
     <div className="p-4" dir="rtl">
-      <UsersFilter setFilters={setFilters} />
+      <UsersFilter
+        setFilters={(newFilters) => updateParams({ ...filters, ...newFilters })}
+      />
 
       {loading ? (
-        <p>جاري التحميل...</p>
+        <p className="animate-pulse">جارٍ التحميل...</p>
       ) : (
-        <table className="w-full mt-4 border border-gray-300 text-right">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 border-b">ID</th>
-              <th className="p-2 border-b">الاسم</th>
-              <th className="p-2 border-b">الدور</th>
-              <th className="p-2 border-b">الهاتف</th>
-              <th className="p-2 border-b">تحكم</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-t">
-                <td className="p-2">{user.id}</td>
-                <td className="p-2">{user.name}</td>
-                <td className="p-2">{user.role}</td>
-                <td className="p-2">{user.phone}</td>
-<td className="p-2 flex gap-2 justify-end w-max">
-  <UpdateUser
-    user={user}
-    onSuccess={fetchUsers}
-    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-  />
-  <DeleteUser
-    id={user.id}
-    onSuccess={fetchUsers}
-    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-  />
-</td>
-
+        <>
+          <table className="w-full mt-4 border text-right">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2 border">ID</th>
+                <th className="p-2 border">الاسم</th>
+                <th className="p-2 border">الدور</th>
+                <th className="p-2 border">الهاتف</th>
+                <th className="p-2 border">تحكم</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="p-4 text-center">
+                    لا يوجد بيانات
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id}>
+                    <td className="p-2 border">{user.id}</td>
+                    <td className="p-2 border">{user.name}</td>
+                    <td className="p-2 border">{user.role}</td>
+                    <td className="p-2 border">{user.phone}</td>
+                   <td className="p-2 border whitespace-nowrap">
+                      <div className="flex gap-2">
+                        <UpdateUser user={user} onSuccess={fetchUsers} />
+                        <DeleteUser id={user.id} onSuccess={fetchUsers} />
+                        <button
+                          onClick={() => setSelectedUser(user.id)}
+                          className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                        >
+                          عرض التفاصيل
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          <Pagination
+            current={pagination.current_page}
+            last={pagination.last_page}
+            onChange={(page) => updateParams({ ...filters, page })}
+          />
+        </>
+      )}
+
+      {/* User Detail Modal */}
+      {selectedUser && (
+        <UserDetail
+          userId={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
       )}
     </div>
   );

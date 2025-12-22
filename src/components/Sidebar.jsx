@@ -6,10 +6,12 @@ export default function Sidebar({ activeMenu, setActiveMenu }) {
       <h3 className="text-2xl font-bold mb-6 text-right">القائمة</h3>
       <ul className="flex-1 space-y-3 text-right">
         {[
+           {key :"StatisticsPage", label :"الرئيسيه"},
           { key: "profile", label: "البروفايل" },
           { key: "editProfile", label: "تعديل البروفايل" },
-          { key: "competitions", label: "المسابقات" },
           { key: "AllUser", label: "كل المستخدمين" },
+           { key: "competitions", label: "المسابقات" },
+           { key: "privacyPolicy", label: "سياسة الخصوصية" },
         ].map((item) => (
           <li
             key={item.key}

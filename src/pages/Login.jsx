@@ -8,6 +8,7 @@ import api from "../api/axois";
 import { AuthContext } from "../auth/AuthContext";
 import "../styles/login.css";
 import React from "react";
+
 // فالديشن بالعربي
 const schema = yup.object().shape({
   phone: yup
@@ -23,7 +24,7 @@ const schema = yup.object().shape({
 export default function Login() {
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState(""); 
+  const [serverError, setServerError] = useState("");
 
   const {
     register,
@@ -34,12 +35,12 @@ export default function Login() {
   });
 
   const onSubmit = async (data) => {
-    setServerError(""); 
+    setServerError("");
     try {
       const res = await api.post("/admin/login", data);
       const { token, user } = res.data.data;
 
-      Cookies.set("token", token,);
+      Cookies.set("token", token);
       setUser(user);
       navigate("/");
     } catch (err) {
@@ -52,35 +53,44 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
-        <h2 style={{ textAlign: "right" }}>تسجيل دخول الادمن</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <form
+        className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md"
+        onSubmit={handleSubmit(onSubmit)}
+        dir="rtl"
+      >
+        <h2 className="text-2xl font-bold mb-6  text-gray-800 dark:text-gray-100 text-center">
+          تسجيل دخول الادمن
+        </h2>
 
-        <label>رقم الهاتف</label>
+        <label className="block mb-1 text-gray-700 dark:text-gray-200">رقم الهاتف</label>
         <input
           type="tel"
+          dir="rtl"
           placeholder="رقم الهاتف"
           {...register("phone")}
           autoComplete="tel"
-          dir="rtl"
-          style={{ textAlign: "right" }}
+          className="w-full p-3 mb-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {errors.phone && <p className="error">{errors.phone.message}</p>}
+        {errors.phone && <p className="text-red-500 mb-3 text-sm">{errors.phone.message}</p>}
 
-        <label>كلمة المرور</label>
+        <label className="block mb-1 text-gray-700 dark:text-gray-200">كلمة المرور</label>
         <input
           type="password"
           placeholder="كلمة المرور"
           {...register("password")}
           autoComplete="current-password"
-          dir="rtl"
-          style={{ textAlign: "right" }}
+          className="w-full p-3 mb-2 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        {errors.password && <p className="error">{errors.password.message}</p>}
+        {errors.password && <p className="text-red-500 mb-3 text-sm">{errors.password.message}</p>}
 
-        {serverError && <p className="error server-error">{serverError}</p>}
+        {serverError && <p className="text-red-500 mb-3 text-sm">{serverError}</p>}
 
-        <button type="submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full py-3 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition-colors disabled:opacity-50"
+        >
           {isSubmitting ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
         </button>
       </form>

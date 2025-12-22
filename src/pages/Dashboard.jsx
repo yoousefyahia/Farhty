@@ -7,11 +7,13 @@ import AllUser from "./AllUser";
 import ProfilePage from "./ProfilePage";
 import EditProfilePage from "./EditProfilePage";
 import CompetitionsPage from "./CompetitionsPage";
-
+import PrivacyPolicyAdmin from "./PrivacyPolicyAdmin";
+import ContactsAdmin from "./ContactsAdmin";
+import StatisticsPage from "./StatisticsPage";
 export default function Dashboard() {
   const { user, loading } = useContext(AuthContext);
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [activeMenu, setActiveMenu] = useState("profile");
+  const [activeMenu, setActiveMenu] = useState("StatisticsPage");
 
 if (loading)
   return (
@@ -55,8 +57,14 @@ if (loading)
         return <CompetitionsPage />;
       case "AllUser":
         return <AllUser />;  
+      case "privacyPolicy":
+        return <PrivacyPolicyAdmin/>;
+          case "ContactsAdmin":
+        return <ContactsAdmin />;  
+        case "StatisticsPage":
+          return <StatisticsPage/>
       default:
-        return <ProfilePage />;
+        return <StatisticsPage />;
     }
   };
 
