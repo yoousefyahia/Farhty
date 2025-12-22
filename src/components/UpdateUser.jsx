@@ -49,76 +49,78 @@ export default function UpdateUser({ user, onSuccess }) {
       </button>
 
       {/* المودال */}
-      {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[420px] p-5 rounded">
-            <h3 className="text-lg font-bold mb-4">تعديل المستخدم</h3>
+{open && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white w-full max-w-md p-6 rounded shadow-lg relative">
+      <h3 className="text-lg font-bold mb-4 text-center">تعديل المستخدم</h3>
 
-            <div className="space-y-3">
-              <input
-                name="name"
-                placeholder="الاسم"
-                className="border p-2 w-full"
-                value={form.name}
-                onChange={handleChange}
-              />
+      <div className="flex flex-col gap-3">
+        <input
+          name="name"
+          placeholder="الاسم"
+          className="border p-2 w-full rounded"
+          value={form.name}
+          onChange={handleChange}
+        />
 
-              <input
-                name="user_name"
-                placeholder="اسم المستخدم"
-                className="border p-2 w-full"
-                value={form.user_name}
-                onChange={handleChange}
-              />
+        <input
+          name="user_name"
+          placeholder="اسم المستخدم"
+          className="border p-2 w-full rounded"
+          value={form.user_name}
+          onChange={handleChange}
+        />
 
-              <input
-                name="phone"
-                placeholder="رقم الهاتف"
-                className="border p-2 w-full"
-                value={form.phone}
-                onChange={handleChange}
-              />
+        <input
+          name="phone"
+          placeholder="رقم الهاتف"
+          className="border p-2 w-full rounded"
+          value={form.phone}
+          onChange={handleChange}
+        />
 
-              <select
-                name="role"
-                className="border p-2 w-full"
-                value={form.role}
-                onChange={handleChange}
-              >
-                <option value="follower">Follower</option>
-                <option value="celebrity">Celebrity</option>
-              </select>
+        <select
+          name="role"
+          className="border p-2 w-full rounded"
+          value={form.role}
+          onChange={handleChange}
+        >
+          <option value="follower">Follower</option>
+          <option value="celebrity">Celebrity</option>
+        </select>
 
-              <select
-                name="gender"
-                className="border p-2 w-full"
-                value={form.gender}
-                onChange={handleChange}
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
+        <select
+          name="gender"
+          className="border p-2 w-full rounded"
+          value={form.gender}
+          onChange={handleChange}
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
 
-            <div className="flex justify-end gap-2 mt-5">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-1 border"
-              >
-                إلغاء
-              </button>
+      <div className="flex justify-end gap-2 mt-5">
+        <button
+          onClick={() => setOpen(false)}
+          className="px-4 py-2 border rounded"
+        >
+          إلغاء
+        </button>
 
-              <button
-                disabled={loading}
-                onClick={submit}
-                className="bg-green-600 text-white px-4 py-1"
-              >
-                حفظ
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <button
+          disabled={loading}
+          onClick={submit}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </>
   );
 }
