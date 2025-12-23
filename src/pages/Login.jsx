@@ -64,7 +64,6 @@ export default function Login() {
 
         <label className="block mb-1 text-gray-700 dark:text-gray-200">رقم الهاتف</label>
         <input
-          type="tel"
           placeholder="رقم الهاتف"
           {...register("phone")}
           autoComplete="tel"
