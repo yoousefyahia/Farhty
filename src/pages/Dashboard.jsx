@@ -69,7 +69,6 @@ if (loading)
   };
 
   return (
-    // أضفنا flex-row-reverse عشان Sidebar يبقى ع اليمين
     <div className="flex  h-screen bg-gray-100 dark:bg-gray-900 text-right">
       {sidebarVisible && <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />}
       <div className="flex-1 flex flex-col">

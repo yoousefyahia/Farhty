@@ -52,7 +52,7 @@ export default function ContestDetailsPage() {
 
       {/* تفاصيل المسابقة */}
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-right">
-        <h2 className="flex flex-row-reverse items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
+        <h2 className="flex  items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
           <FaInfoCircle /> تفاصيل المسابقة
         </h2>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
@@ -68,7 +68,7 @@ export default function ContestDetailsPage() {
       {/* الشروط */}
       {contest.terms?.length > 0 && (
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-right">
-          <h2 className="flex flex-row-reverse items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
+          <h2 className="flex  items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
             <FaClipboardList /> الشروط
           </h2>
           <ul className="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-1">
@@ -81,7 +81,7 @@ export default function ContestDetailsPage() {
 
       {/* الجوائز */}
 <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-right">
-  <h2 className="flex flex-row-reverse items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
+  <h2 className="flex  items-center gap-2 text-xl font-semibold mb-4 border-b pb-2">
     <FaGift /> الجوائز
   </h2>
 
