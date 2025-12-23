@@ -5,71 +5,7 @@ import api from "../api/axois";
 import toast from "react-hot-toast";
 import CompetitionCard from "../components/CompetitionCard";
 import Pagination from "../components/Pagination";
-
-let searchTimeout;
-
-function ContestsFilter({ setFilters }) {
-  const [localSearch, setLocalSearch] = useState("");
-
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setLocalSearch(value);
-
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      setFilters((prev) => ({
-        ...prev,
-        search: value || "",
-        page: 1,
-      }));
-    }, 500); // debounce 500ms
-  };
-
-  return (
-    <div className="flex flex-wrap justify-end gap-4 mb-6 items-center">
-      {/* بحث بالعنوان */}
-      <input
-        type="text"
-        placeholder="بحث بالعنوان..."
-        value={localSearch}
-        onChange={handleSearch}
-        className="border px-3 py-2 rounded w-64"
-      />
-
-      {/* حالة المسابقة */}
-      <select
-        onChange={(e) =>
-          setFilters((prev) => ({
-            ...prev,
-            status: e.target.value,
-            page: 1,
-          }))
-        }
-        className="border px-3 py-2 rounded"
-      >
-        <option value="">كل الحالات</option>
-        <option value="active">نشطة</option>
-        <option value="ended">منتهية</option>
-        <option value="inactive">غير نشطة</option>
-      </select>
-
-      {/* فلترة حسب المشهور (user_id) */}
-      <input
-        type="number"
-        placeholder="ID المشهور"
-        onChange={(e) =>
-          setFilters((prev) => ({
-            ...prev,
-            user_id: e.target.value || "",
-            page: 1,
-          }))
-        }
-        className="border px-3 py-2 rounded w-32"
-      />
-    </div>
-  );
-}
-
+import ContestsFilter from"../components/ContestsFilter";
 export default function CompetitionsPage() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();

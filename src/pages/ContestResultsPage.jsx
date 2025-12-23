@@ -71,8 +71,10 @@ export default function ContestResultsPage() {
               <li>المعدل: {stats.average_score?.toFixed(2) || 0}</li>
               <li>النسبة المئوية: {stats.average_percentage?.toFixed(2) || 0}%</li>
             </ul>
-            <div className="h-64">
-              <ResponsiveContainer>
+
+            {/* Chart */}
+            <div className="w-full h-60">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
                     { name: "المعدل", value: stats.average_score || 0 },
@@ -92,6 +94,7 @@ export default function ContestResultsPage() {
           <p className="text-gray-500">لا توجد إحصائيات متاحة حالياً.</p>
         )}
       </div>
+
 
       {/* المنصة والمشهور */}
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-right">
