@@ -337,7 +337,7 @@ export default function EditProfilePage({ user: userProp }) {
           </div>
         )}
 
-        <div className="mt-6 flex justify-end space-x-3">
+        <div className="mt-6 flex space-x-3">
           <button
             type="submit"
             disabled={saving}

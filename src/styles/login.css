@@ -62,15 +62,12 @@
   font-size: 0.9rem;
   margin-bottom: 10px;
 }
-.login-form input {
-  text-align: right; /* النص من اليمين */
-}
+
 
 .error {
   color: red;
   font-size: 0.9rem;
   margin-bottom: 10px;
-  text-align: right; /* الخطأ من اليمين */
 }
 
 .server-error {
@@ -78,8 +75,7 @@
   font-weight: bold;
 }
 .login-form input {
-  text-align: right; /* النص داخل الحقول من اليمين */
-  direction: rtl;
+  text-align: right; 
 }
 
 .login-form label {
@@ -91,7 +87,6 @@
   color: red;
   font-size: 0.9rem;
   margin-bottom: 10px;
-  text-align: right; /* الخطأ من اليمين */
 }
 
 .server-error {

@@ -19,7 +19,7 @@ export default function ContestsFilter({ setFilters }) {
   };
 
   return (
-    <div className="flex flex-wrap justify-end gap-4 mb-6 items-center">
+    <div className="flex flex-wrap  gap-4 mb-6 items-center">
       <input
         type="text"
         placeholder="بحث بالعنوان..."

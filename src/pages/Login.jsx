@@ -57,7 +57,6 @@ export default function Login() {
       <form
         className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md"
         onSubmit={handleSubmit(onSubmit)}
-        dir="rtl"
       >
         <h2 className="text-2xl font-bold mb-6  text-gray-800 dark:text-gray-100 text-center">
           تسجيل دخول الادمن
@@ -66,7 +65,6 @@ export default function Login() {
         <label className="block mb-1 text-gray-700 dark:text-gray-200">رقم الهاتف</label>
         <input
           type="tel"
-          dir="rtl"
           placeholder="رقم الهاتف"
           {...register("phone")}
           autoComplete="tel"

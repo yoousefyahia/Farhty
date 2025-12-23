@@ -54,7 +54,7 @@ export default function AllUser() {
   }, [searchParams]);
 
   return (
-    <div className="p-4" dir="rtl">
+    <div className="p-4">
       <UsersFilter
         setFilters={(newFilters) =>
           updateParams({ ...filters, ...newFilters, page: 1 })

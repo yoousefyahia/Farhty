@@ -9,6 +9,7 @@ export default function Sidebar({ activeMenu, setActiveMenu }) {
            {key :"StatisticsPage", label :"الرئيسيه"},
           { key: "profile", label: "البروفايل" },
           { key: "editProfile", label: "تعديل البروفايل" },
+          { key: "ContactsAdmin", label: "رسائل الادمن" },
           { key: "AllUser", label: "كل المستخدمين" },
            { key: "competitions", label: "المسابقات" },
            { key: "privacyPolicy", label: "سياسة الخصوصية" },

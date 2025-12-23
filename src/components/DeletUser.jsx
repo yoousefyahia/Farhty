@@ -36,7 +36,7 @@ export default function DeleteUser({ id, onSuccess }) {
           <div className="bg-white p-5 rounded w-80">
             <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
             <p className="mb-4">هل أنت متأكد أنك تريد حذف هذا المستخدم؟</p>
-            <div className="flex justify-end gap-2">
+            <div className="flex gap-2">
               <button
                 onClick={() => setOpen(false)}
                 className="px-3 py-1 border"
