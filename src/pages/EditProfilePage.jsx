@@ -23,10 +23,10 @@ const schema = yup.object().shape({
 });
 
 export default function EditProfilePage({ user: userProp }) {
-  const authContext = useContext(AuthContext);
-  const { user: userContext, loading, setUser } = authContext || {};
+  const { setUser } = useContext(AuthContext);
 
-  const user = userContext || userProp;
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [imagePreview, setImagePreview] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -35,12 +35,36 @@ export default function EditProfilePage({ user: userProp }) {
   const imageInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
+  const defaultProfile =
+    "https://static.vecteezy.com/system/resources/thumbnails/032/176/191/small/business-avatar-profile-black-icon-man-of-user-symbol-in-trendy-flat-style-isolated-on-male-profile-people-diverse-face-for-social-network-or-web-vector.jpg";
+  const defaultCover =
+    "https://flowbite.com/docs/images/examples/image-3@2x.jpg";
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/admin/me");
+
+        if (response.data.success) {
+          setUserData(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  }, []);
+
   const {
     register,
     handleSubmit,
+    formState: { errors },
+    reset,
     setValue,
     watch,
-    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -55,36 +79,28 @@ export default function EditProfilePage({ user: userProp }) {
     },
   });
 
-  const passwordValue = watch("password");
-
-  // تحميل بيانات المستخدم من السيرفر
   useEffect(() => {
-    if (!user) return;
+    if (!userData) return;
 
-    setValue("name", user.name || "");
-    setValue("user_name", user.user_name || "");
-    setValue("phone", user.phone || "");
-    setValue("gender", user.gender || "");
+    reset({
+      name: userData.name || "",
+      user_name: userData.user_name || "",
+      phone: userData.phone || "",
+      gender: userData.gender || "",
+      password: "",
+      password_confirmation: "",
+      image: null,
+      cover: null,
+    });
 
-    // Password و Confirmation من السيرفر
-    const pwd = user.password || "";
-    setValue("password", pwd);
-    setValue("password_confirmation", pwd);
-
-    // الصور من السيرفر
+    setValue("gender", userData.gender || "");
     setImagePreview(null);
     setCoverPreview(null);
-    setValue("image", null);
-    setValue("cover", null);
-  }, [user, setValue]);
+  }, [userData, reset, setValue]);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("الملف يجب أن يكون صورة!");
-      return;
-    }
+    if (!file || !file.type.startsWith("image/")) return;
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
@@ -93,11 +109,7 @@ export default function EditProfilePage({ user: userProp }) {
 
   const handleCoverChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("الملف يجب أن يكون صورة!");
-      return;
-    }
+    if (!file || !file.type.startsWith("image/")) return;
     const reader = new FileReader();
     reader.onloadend = () => setCoverPreview(reader.result);
     reader.readAsDataURL(file);
@@ -105,7 +117,7 @@ export default function EditProfilePage({ user: userProp }) {
   };
 
   const onSubmit = async (data) => {
-    if (!user) return;
+    if (!userData) return;
 
     setSaving(true);
     setMessage("");
@@ -114,15 +126,12 @@ export default function EditProfilePage({ user: userProp }) {
     try {
       const formData = new FormData();
 
-      // إرسال الحقول التي تغيرت فقط
-      if (data.name !== user.name) formData.append("name", data.name.trim());
-      if (data.user_name !== user.user_name)
-        formData.append("user_name", data.user_name.trim());
-      if (data.phone !== user.phone) formData.append("phone", data.phone.trim());
-      if (data.gender !== user.gender) formData.append("gender", data.gender.trim());
+      if (data.name !== userData.name) formData.append("name", data.name.trim());
+      if (data.user_name !== userData.user_name) formData.append("user_name", data.user_name.trim());
+      if (data.phone !== userData.phone) formData.append("phone", data.phone.trim());
+      if (data.gender !== userData.gender) formData.append("gender", data.gender.trim());
 
-      // كلمة السر لو اتغيرت فقط
-      if (data.password !== user.password && data.password.length > 0) {
+      if (data.password) {
         formData.append("password", data.password);
         formData.append("password_confirmation", data.password_confirmation);
       }
@@ -138,16 +147,23 @@ export default function EditProfilePage({ user: userProp }) {
         const updatedUser = response.data.data;
         setMessage(response.data.message || "تم تحديث الملف الشخصي بنجاح!");
         setMessageType("success");
+
+        setUserData(updatedUser);
         if (setUser) setUser(updatedUser);
 
-        // بعد الحفظ، نظهر الصور من السيرفر مجددًا
         setImagePreview(null);
         setCoverPreview(null);
 
-        // Password افتراضي من السيرفر بعد التحديث
-        const pwd = updatedUser.password || "";
-        setValue("password", pwd);
-        setValue("password_confirmation", pwd);
+        reset({
+          name: updatedUser.name || "",
+          user_name: updatedUser.user_name || "",
+          phone: updatedUser.phone || "",
+          gender: updatedUser.gender || "",
+          password: "",
+          password_confirmation: "",
+          image: null,
+          cover: null,
+        });
       } else {
         setMessage("حدث خطأ غير متوقع");
         setMessageType("error");
@@ -167,35 +183,27 @@ export default function EditProfilePage({ user: userProp }) {
     }
   };
 
-if (loading)
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="flex flex-col items-center">
-        <svg
-          className="animate-spin h-10 w-10 text-blue-600 mb-3"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3 3 3H4z"
-          ></path>
-        </svg>
-        <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">جاري التحميل...</p>
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center">
+          <svg
+            className="animate-spin h-10 w-10 text-blue-600 mb-3"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3 3 3H4z"></path>
+          </svg>
+          <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            جاري تحميل البيانات...
+          </p>
+        </div>
       </div>
-    </div>
-  );
-  if (!user) return <div>المستخدم غير موجود</div>;
+    );
+
+  if (!userData) return <div>المستخدم غير موجود</div>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow text-right">
@@ -207,25 +215,16 @@ if (loading)
           {/* الصورة الشخصية */}
           <div>
             <label className="block mb-2 font-semibold">الصورة الشخصية</label>
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="profile"
-                className="mb-3 h-32 w-32 rounded-full object-cover border"
-              />
-            ) : user.image ? (
-              <img
-                src={`${import.meta.env.VITE_API_BASE_URL || ""}/${user.image}`}
-                alt="profile"
-                className="mb-3 h-32 w-32 rounded-full object-cover border"
-              />
-            ) : (
-              <p>لا يوجد صورة</p>
-            )}
+            <img
+              src={imagePreview || userData.image || defaultProfile}
+              alt="profile"
+              className="mb-3 h-32 w-32 rounded-full object-cover border"
+              onError={(e) => { e.currentTarget.src = defaultProfile; }}
+            />
             <button
               type="button"
               onClick={() => imageInputRef.current?.click()}
-              className="px-3 py-1 bg-blue-500 text-white rounded mb-2"
+              className="px-3 py-1 bg-blue-500 text-white rounded mb-2 hover:bg-blue-600 transition"
             >
               اختر صورة
             </button>
@@ -241,25 +240,16 @@ if (loading)
           {/* صورة الغلاف */}
           <div>
             <label className="block mb-2 font-semibold">صورة الغلاف</label>
-            {coverPreview ? (
-              <img
-                src={coverPreview}
-                alt="cover"
-                className="mb-3 h-32 w-full rounded object-cover border"
-              />
-            ) : user.cover ? (
-              <img
-                src={`${import.meta.env.VITE_API_BASE_URL || ""}/${user.cover}`}
-                alt="cover"
-                className="mb-3 h-32 w-full rounded object-cover border"
-              />
-            ) : (
-              <p>لا يوجد صورة</p>
-            )}
+            <img
+              src={coverPreview || userData.cover || defaultCover}
+              alt="cover"
+              className="mb-3 h-32 w-full rounded object-cover border"
+              onError={(e) => { e.currentTarget.src = defaultCover; }}
+            />
             <button
               type="button"
               onClick={() => coverInputRef.current?.click()}
-              className="px-3 py-1 bg-blue-500 text-white rounded mb-2"
+              className="px-3 py-1 bg-blue-500 text-white rounded mb-2 hover:bg-blue-600 transition"
             >
               اختر صورة
             </button>
@@ -274,85 +264,94 @@ if (loading)
         </div>
 
         {/* الحقول النصية */}
-   {/* الحقول النصية */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-  <div>
-    <label className="block mb-1 font-semibold">الاسم</label>
-    <input
-      className="w-full p-3 border rounded text-right" 
-      {...register("name")}
-    />
-    <p className="text-red-600 text-sm">{errors.name?.message}</p>
-  </div>
-  <div>
-    <label className="block mb-1 font-semibold">اسم المستخدم</label>
-    <input
-      className="w-full p-3 border rounded text-right" 
-      {...register("user_name")}
-    />
-    <p className="text-red-600 text-sm">{errors.user_name?.message}</p>
-  </div>
-  <div>
-    <label className="block mb-1 font-semibold">رقم الهاتف</label>
-    <input className="w-full p-3 border rounded text-right" {...register("phone")} />
-    <p className="text-red-600 text-sm">{errors.phone?.message}</p>
-  </div>
-  <div>
-    <label className="block mb-1 font-semibold">الجنس</label>
-    <select
-      className="w-full p-3 border rounded text-right" // ← هنا
-      {...register("gender")}
-    >
-      <option value="">اختر الجنس</option>
-      <option value="male">ذكر</option>
-      <option value="female">أنثى</option>
-    </select>
-    <p className="text-red-600 text-sm">{errors.gender?.message}</p>
-  </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className="block mb-1 font-semibold">الاسم</label>
+            <input
+              className="w-full p-3 border rounded text-right dark:bg-gray-700 dark:border-gray-600"
+              {...register("name")}
+            />
+            <p className="text-red-600 text-sm mt-1">{errors.name?.message}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-semibold">اسم المستخدم</label>
+            <input
+              className="w-full p-3 border rounded text-right dark:bg-gray-700 dark:border-gray-600"
+              {...register("user_name")}
+            />
+            <p className="text-red-600 text-sm mt-1">{errors.user_name?.message}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-semibold">رقم الهاتف</label>
+            <input
+              className="w-full p-3 border rounded text-right dark:bg-gray-700 dark:border-gray-600"
+              {...register("phone")}
+            />
+            <p className="text-red-600 text-sm mt-1">{errors.phone?.message}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-semibold">الجنس</label>
+            <select
+              className="w-full p-3 border rounded text-right dark:bg-gray-700 dark:border-gray-600"
+              {...register("gender")}
+            >
+              <option value="">اختر الجنس</option>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+            <p className="text-red-600 text-sm mt-1">{errors.gender?.message}</p>
+          </div>
 
-  <div>
-    <label className="block mb-1 font-semibold">كلمة المرور</label>
-    <input
-      type="password"
-      className="w-full p-3 border rounded"
-      {...register("password")}
-      placeholder="اتركه فارغ إذا لم ترغب في تغييره"
-    />
-    <p className="text-red-600 text-sm">{errors.password?.message}</p>
-  </div>
+          <div>
+            <label className="block mb-1 font-semibold">كلمة المرور</label>
+            <input
+              type="password"
+              className="w-full p-3 border rounded dark:bg-gray-700 dark:border-gray-600"
+              {...register("password")}
+              placeholder="اتركه فارغ إذا لم ترغب في تغييره"
+            />
+            <p className="text-red-600 text-sm mt-1">{errors.password?.message}</p>
+          </div>
 
-  <div>
-    <label className="block mb-1 font-semibold">تأكيد كلمة المرور</label>
-    <input
-      type="password"
-      className="w-full p-3 border rounded"
-      {...register("password_confirmation")}
-      placeholder="اتركه فارغ إذا لم ترغب في تغييره"
-    />
-    <p className="text-red-600 text-sm">{errors.password_confirmation?.message}</p>
-  </div>
-</div>
-
+          <div>
+            <label className="block mb-1 font-semibold">تأكيد كلمة المرور</label>
+            <input
+              type="password"
+              className="w-full p-3 border rounded dark:bg-gray-700 dark:border-gray-600"
+              {...register("password_confirmation")}
+              placeholder="اتركه فارغ إذا لم ترغب في تغييره"
+            />
+            <p className="text-red-600 text-sm mt-1">{errors.password_confirmation?.message}</p>
+          </div>
+        </div>
 
         {message && (
           <div
             className={`mt-5 p-3 rounded ${
               messageType === "success"
-                ? "bg-green-50 border border-green-300"
-                : "bg-red-50 border border-red-300"
+                ? "bg-green-50 border border-green-300 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300"
+                : "bg-red-50 border border-red-300 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300"
             }`}
           >
             {message}
           </div>
         )}
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end space-x-3">
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition"
           >
-            {saving ? "جارٍ الحفظ..." : "حفظ"}
+            {saving ? (
+              <span className="flex items-center">
+                <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                جاري الحفظ...
+              </span>
+            ) : "حفظ التغييرات"}
           </button>
         </div>
       </form>

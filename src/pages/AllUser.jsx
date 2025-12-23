@@ -6,7 +6,7 @@ import DeleteUser from "../components/DeletUser";
 import UpdateUser from "../components/UpdateUser";
 import Pagination from "../components/Pagination";
 import UserDetail from "../components/UserDetail";
-import DashboardSkeleton from "../components/DashboardSkeleton";
+
 export default function AllUser() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,16 +18,15 @@ export default function AllUser() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [filters, setFilters] = useState({
+  // filters من الـ URL مباشرة
+  const filters = {
     role: searchParams.get("role") || "",
     search: searchParams.get("search") || "",
     page: Number(searchParams.get("page")) || 1,
-  });
+  };
 
-  // تحديث URL مع كل تغيير Filters
   const updateParams = (newFilters) => {
     setSearchParams(newFilters);
-    setFilters(newFilters);
   };
 
   const fetchUsers = async () => {
@@ -50,14 +49,16 @@ export default function AllUser() {
   };
 
   useEffect(() => {
-    const timer = setTimeout(fetchUsers, 400); // debounce
+    const timer = setTimeout(fetchUsers, 400);
     return () => clearTimeout(timer);
-  }, [filters]);
+  }, [searchParams]);
 
   return (
     <div className="p-4" dir="rtl">
       <UsersFilter
-        setFilters={(newFilters) => updateParams({ ...filters, ...newFilters })}
+        setFilters={(newFilters) =>
+          updateParams({ ...filters, ...newFilters, page: 1 })
+        }
       />
 
       {loading ? (
@@ -88,7 +89,7 @@ export default function AllUser() {
                     <td className="p-2 border">{user.name}</td>
                     <td className="p-2 border">{user.role}</td>
                     <td className="p-2 border">{user.phone}</td>
-                   <td className="p-2 border whitespace-nowrap">
+                    <td className="p-2 border whitespace-nowrap">
                       <div className="flex gap-2">
                         <UpdateUser user={user} onSuccess={fetchUsers} />
                         <DeleteUser id={user.id} onSuccess={fetchUsers} />
@@ -109,12 +110,13 @@ export default function AllUser() {
           <Pagination
             current={pagination.current_page}
             last={pagination.last_page}
-            onChange={(page) => updateParams({ ...filters, page })}
+            onChange={(page) =>
+              updateParams({ ...filters, page })
+            }
           />
         </>
       )}
 
-      {/* User Detail Modal */}
       {selectedUser && (
         <UserDetail
           userId={selectedUser}

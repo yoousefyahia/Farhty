@@ -23,19 +23,20 @@ export default function Pagination({ current, last, onChange }) {
         السابق
       </button>
 
-      {pages.map((p, i) =>
-        p === "..." ? (
-          <span key={i}>…</span>
-        ) : (
-          <button
-            key={p}
-            onClick={() => onChange(p)}
-            className={p === current ? "font-bold" : ""}
-          >
-            {p}
-          </button>
-        )
-      )}
+  {pages.map((p, i) =>
+  p === "..." ? (
+    <span key={`dots-${i}`}>…</span>
+  ) : (
+    <button
+      key={`page-${p}-${i}`}
+      onClick={() => onChange(p)}
+      className={p === current ? "font-bold" : ""}
+    >
+      {p}
+    </button>
+  )
+)}
+
 
       <button
         disabled={current === last}
