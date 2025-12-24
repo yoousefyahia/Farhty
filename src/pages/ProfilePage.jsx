@@ -1,16 +1,39 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
+import React, { useEffect, useState } from "react";
+import api from "../api/axois";
 import Loading from "../components/Loading";
+import toast from "react-hot-toast";
 
 export default function ProfilePage() {
-  const { user, loading } = useContext(AuthContext);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [coverLoaded, setCoverLoaded] = useState(false);
 
   const defaultProfile =
     "https://static.vecteezy.com/system/resources/thumbnails/032/176/191/small/business-avatar-profile-black-icon-man-of-user-symbol-in-trendy-flat-style-isolated-on-male-profile-people-diverse-face-for-social-network-or-web-vector.jpg";
+
   const defaultCover =
     "https://flowbite.com/docs/images/examples/image-3@2x.jpg";
 
-  if (loading) return <Loading message="جاري جلب بيانات المستخدم..." />;
+  // 🔹 استدعاء منفصل
+  useEffect(() => {
+
+    api
+      .get("/admin/me")
+      .then((res) => {
+        setUser(res.data.data);
+      })
+      .catch((err) => {
+          toast.error("فشل تحميل البيانات، حاول مرة أخرى");
+          setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <Loading message="جاري تحميل الملف الشخصي..." />;
 
   if (!user) {
     return (
@@ -22,71 +45,95 @@ export default function ProfilePage() {
 
   return (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-right max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">الملف الشخصي</h2>
+      <h2 className="text-2xl font-bold mb-6">الملف الشخصي</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {/* الصورة الشخصية */}
+      {/* الصور */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* صورة البروفايل */}
         <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
-            الصورة الشخصية:
-          </span>
-          <div className="mt-2">
+          <p className="font-semibold mb-2">الصورة الشخصية</p>
+
+          {!profileLoaded && (
             <img
-              src={user.image || defaultProfile}
-              alt="profile"
+              src={defaultProfile}
               className="h-32 w-32 rounded-full object-cover border"
-              onError={(e) => (e.currentTarget.src = defaultProfile)}
+              alt="default"
+              loading="lazy"
             />
-          </div>
+          )}
+
+          <img
+            src={user.image}
+            alt="profile"
+            loading="lazy"
+            className={`h-32 w-32 rounded-full object-cover border ${
+              profileLoaded ? "block" : "hidden"
+            }`}
+            onLoad={() => {
+              setProfileLoaded(true);
+            }}
+            onError={() => {
+              setProfileLoaded(true);
+            }}
+          />
         </div>
 
         {/* صورة الغلاف */}
         <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
-            صورة الغلاف:
-          </span>
-          <div className="mt-2">
+          <p className="font-semibold mb-2">صورة الغلاف</p>
+
+          {!coverLoaded && (
             <img
-              src={user.cover || defaultCover}
-              alt="cover"
+              src={defaultCover}
               className="h-32 w-full rounded object-cover border"
-              onError={(e) => (e.currentTarget.src = defaultCover)}
+              alt="default"
+              loading="lazy"
             />
-          </div>
+          )}
+
+          <img
+            src={user.cover}
+            alt="cover"
+            loading="lazy"
+            className={`h-32 w-full rounded object-cover border ${
+              coverLoaded ? "block" : "hidden"
+            }`}
+            onLoad={() => {
+              setCoverLoaded(true);
+            }}
+            onError={() => {
+              setCoverLoaded(true);
+            }}
+          />
         </div>
       </div>
 
-      {/* البيانات النصية */}
-      <div className="space-y-4 text-right">
-        <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">الاسم:</span>
-          <div className="text-gray-900 dark:text-white">{user.name || "غير محدد"}</div>
-        </div>
-
-        <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">اسم المستخدم:</span>
-          <div className="text-gray-900 dark:text-white">{user.user_name || "غير محدد"}</div>
-        </div>
-
-        <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">رقم الهاتف:</span>
-          <div className="text-gray-900 dark:text-white">{user.phone || "غير محدد"}</div>
-        </div>
-
-        <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">الجنس:</span>
-          <div className="text-gray-900 dark:text-white">
-            {user.gender === "male" ? "ذكر" : user.gender === "female" ? "أنثى" : "غير محدد"}
-          </div>
-        </div>
-
-        <div>
-          <span className="font-semibold text-gray-700 dark:text-gray-300">الصلاحية:</span>
-          <div className="text-gray-900 dark:text-white">
-            {user.is_admin ? "مدير" : "مستخدم عادي"}
-          </div>
-        </div>
+      {/* البيانات */}
+      <div className="space-y-4">
+        <Item label="الاسم" value={user.name} />
+        <Item label="اسم المستخدم" value={user.user_name} />
+        <Item label="رقم الهاتف" value={user.phone} />
+        <Item
+          label="الجنس"
+          value={
+            user.gender === "male"
+              ? "ذكر"
+              : user.gender === "female"
+              ? "أنثى"
+              : "غير محدد"
+          }
+        />
+        <Item label="الصلاحية" value={user.is_admin ? "مدير" : "مستخدم"} />
       </div>
+    </div>
+  );
+}
+
+function Item({ label, value }) {
+  return (
+    <div>
+      <span className="font-semibold">{label}: </span>
+      <span>{value || "غير محدد"}</span>
     </div>
   );
 }
