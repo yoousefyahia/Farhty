@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axois";
 import StatCard from "../components/StatCard";
-import DashboardSkeleton from "../components/DashboardSkeleton";
+// import DashboardSkeleton from "../components/DashboardSkeleton";
 import {
   PieChart,
   Pie,
@@ -43,7 +43,7 @@ export default function StatisticsPage() {
   }, []);
 
 if (loading)
-  return <DashboardSkeleton />;
+  return("جاري التحميل")
   if (!data) return <p className="p-6 text-red-500">فشل تحميل الإحصائيات</p>;
 
   const genderData = [

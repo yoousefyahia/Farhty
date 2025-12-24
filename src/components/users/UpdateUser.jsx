@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../api/axois";
+import api from "../../api/axois";
 import toast from "react-hot-toast";
 
 export default function UpdateUser({ user, onSuccess }) {
@@ -43,7 +43,7 @@ export default function UpdateUser({ user, onSuccess }) {
       {/* زر التعديل */}
       <button
         onClick={() => setOpen(true)}
-        className="bg-green-600 text-white px-3 py-1"
+        className="bg-blue-600 text-white px-3 py-1"
       >
         تعديل
       </button>

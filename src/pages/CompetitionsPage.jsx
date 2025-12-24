@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import api from "../api/axois";
 import toast from "react-hot-toast";
-import CompetitionCard from "../components/CompetitionCard";
+import CompetitionCard from "../components/contests/CompetitionCard";
 import Pagination from "../components/Pagination";
-import ContestsFilter from"../components/ContestsFilter";
+import ContestsFilter from"../components/contests/ContestsFilter";
 export default function CompetitionsPage() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();

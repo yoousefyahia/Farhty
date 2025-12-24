@@ -10,6 +10,7 @@ import CompetitionsPage from "./CompetitionsPage";
 import PrivacyPolicyAdmin from "./PrivacyPolicyAdmin";
 import ContactsAdmin from "./ContactsAdmin";
 import StatisticsPage from "./StatisticsPage";
+import AdminsPage from "./AdminsPage"
 export default function Dashboard() {
   const { user, loading } = useContext(AuthContext);
   const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -53,6 +54,7 @@ if (loading)
         return <ProfilePage />;
       case "editProfile":
         return <EditProfilePage />; 
+        case"AdminsPage": return<AdminsPage/>
       case "competitions":
         return <CompetitionsPage />;
       case "AllUser":

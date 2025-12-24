@@ -22,10 +22,10 @@ const handleLogout = async () => {
 
   return (
  <nav className="flex items-center justify-between p-4 bg-gray-800 text-white">
-  <button onClick={toggleSidebar} className="text-xl">
+  <button onClick={toggleSidebar} className="text-xl bg-blue-600 ">
     ☰
   </button>
-    <h1 className="text-lg font-bold">Dashboard</h1>
+    <h1 className="text-lg font-bold">ادمن داشبورد</h1>
 
   <div className="flex items-center gap-2">
     {user ? (

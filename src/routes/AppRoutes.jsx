@@ -9,8 +9,8 @@ import DashboardSkeleton from "../components/DashboardSkeleton";
 
 // صفحات المسابقات
 import CompetitionsPage from "../pages/CompetitionsPage";
-import ContestDetailsPage from "../pages/ContestDetailsPage";
-import ContestResultsPage from "../pages/ContestResultsPage";
+import ContestDetailsPage from "../pages/contest/ContestDetailsPage";
+import ContestResultsPage from "../pages/contest/ContestResultsPage";
 
 export default function AppRoutes() {
   const { loading } = useContext(AuthContext);

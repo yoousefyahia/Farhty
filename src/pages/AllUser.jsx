@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../api/axois";
-import UsersFilter from "../components/UsersFilter";
-import DeleteUser from "../components/DeletUser";
-import UpdateUser from "../components/UpdateUser";
+import UsersFilter from "../components/users/UsersFilter";
+import DeleteUser from "../components/users/DeletUser";
+import UpdateUser from "../components/users/UpdateUser";
 import Pagination from "../components/Pagination";
-import UserDetail from "../components/UserDetail";
+import UserDetail from "../components/users/UserDetail";
 
 export default function AllUser() {
   const [users, setUsers] = useState([]);

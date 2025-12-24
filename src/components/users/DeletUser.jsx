@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../api/axois";
+import api from "../../api/axois";
 import toast from "react-hot-toast";
 
 export default function DeleteUser({ id, onSuccess }) {

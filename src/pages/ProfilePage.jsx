@@ -1,9 +1,16 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
+import Loading from "../components/Loading";
 
-export default function ProfilePage({ user: userProp }) {
-  const { user: userContext } = useContext(AuthContext);
-  const user = userContext || userProp;
+export default function ProfilePage() {
+  const { user, loading } = useContext(AuthContext);
+
+  const defaultProfile =
+    "https://static.vecteezy.com/system/resources/thumbnails/032/176/191/small/business-avatar-profile-black-icon-man-of-user-symbol-in-trendy-flat-style-isolated-on-male-profile-people-diverse-face-for-social-network-or-web-vector.jpg";
+  const defaultCover =
+    "https://flowbite.com/docs/images/examples/image-3@2x.jpg";
+
+  if (loading) return <Loading message="جاري جلب بيانات المستخدم..." />;
 
   if (!user) {
     return (
@@ -12,11 +19,6 @@ export default function ProfilePage({ user: userProp }) {
       </div>
     );
   }
-
-  const defaultProfile =
-    "https://static.vecteezy.com/system/resources/thumbnails/032/176/191/small/business-avatar-profile-black-icon-man-of-user-symbol-in-trendy-flat-style-isolated-on-male-profile-people-diverse-face-for-social-network-or-web-vector.jpg"; 
-  const defaultCover =
-    "https://flowbite.com/docs/images/examples/image-3@2x.jpg"; 
 
   return (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-right max-w-3xl mx-auto">
@@ -74,11 +76,7 @@ export default function ProfilePage({ user: userProp }) {
         <div>
           <span className="font-semibold text-gray-700 dark:text-gray-300">الجنس:</span>
           <div className="text-gray-900 dark:text-white">
-            {user.gender === "male"
-              ? "ذكر"
-              : user.gender === "female"
-              ? "أنثى"
-              : "غير محدد"}
+            {user.gender === "male" ? "ذكر" : user.gender === "female" ? "أنثى" : "غير محدد"}
           </div>
         </div>
 

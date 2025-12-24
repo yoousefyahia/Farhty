@@ -6,7 +6,7 @@ const defaultContestImage = "https://via.placeholder.com/400x200?text=مسابق
 function PlatformIcon({ platform }) {
   switch (platform?.name) {
     case "youtube":
-      return <FaYoutube className="text-red-600" size={20} />;
+      return <FaYoutube className="text-blue-600" size={20} />;
     case "snapchat":
       return <FaSnapchatGhost className="text-yellow-400" size={20} />;
     case "tiktok":
@@ -41,7 +41,7 @@ export default function CompetitionCard({ contest, onDetails, onResults, onDelet
           </button>
           <button
             onClick={onResults}
-            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded flex-1"
+            className="bg-blue-500 hover:bg-green-600 text-white px-3 py-1 rounded flex-1"
           >
             النتائج
           </button>
