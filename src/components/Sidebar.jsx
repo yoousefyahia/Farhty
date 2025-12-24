@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 
 export default function Sidebar({ activeMenu, setActiveMenu }) {
-  const { user } = useContext(AuthContext); // جلب بيانات الادمن الحالي
+  const { user } = useContext(AuthContext); 
 
   return (
     <aside className="w-64 bg-white dark:bg-gray-800 p-6 border-l border-gray-200 dark:border-gray-700 ml-auto h-screen flex flex-col">
