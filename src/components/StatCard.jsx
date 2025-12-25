@@ -1,5 +1,4 @@
 import React from "react";
-// import { IconType } from "react-icons";
 
 export default function StatCard({ title, value, icon: Icon, color }) {
   return (

@@ -16,7 +16,6 @@ export default function ProfilePage() {
   const defaultCover =
     "https://flowbite.com/docs/images/examples/image-3@2x.jpg";
 
-  // 🔹 استدعاء منفصل
   useEffect(() => {
 
     api

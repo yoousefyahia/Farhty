@@ -9,7 +9,6 @@ import { AuthContext } from "../auth/AuthContext";
 import "../styles/login.css";
 import React from "react";
 
-// فالديشن بالعربي
 const schema = yup.object().shape({
   phone: yup
     .string()

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axois";
 import { toast } from "react-hot-toast";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 export default function ContactsAdmin() {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedContactId, setSelectedContactId] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchContacts = async () => {
     setLoading(true);
@@ -13,7 +18,7 @@ export default function ContactsAdmin() {
         params: { page: 1, per_page: 15 },
       });
       setContacts(res.data.data.data);
-    } catch (err) {
+    } catch {
       toast.error("فشل تحميل الرسائل");
     }
     setLoading(false);
@@ -28,7 +33,7 @@ export default function ContactsAdmin() {
       await axios.post(`/admin/contacts/${id}/read`);
       toast.success("تم تحديد الرسالة كمقروءة");
       fetchContacts();
-    } catch (err) {
+    } catch {
       toast.error("فشل العملية");
     }
   };
@@ -38,24 +43,28 @@ export default function ContactsAdmin() {
       await axios.post("/admin/contacts/mark-all-read");
       toast.success("تم تحديد جميع الرسائل كمقروءة");
       fetchContacts();
-    } catch (err) {
+    } catch {
       toast.error("فشل العملية");
     }
   };
 
-  const deleteContact = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف الرسالة؟")) return;
+  const confirmDeleteContact = async () => {
     try {
-      await axios.delete(`/admin/contacts/${id}`);
+      setDeleteLoading(true);
+      await axios.delete(`/admin/contacts/${selectedContactId}`);
       toast.success("تم حذف الرسالة");
       fetchContacts();
-    } catch (err) {
+    } catch {
       toast.error("فشل حذف الرسالة");
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteModal(false);
+      setSelectedContactId(null);
     }
   };
 
   return (
-    <div className="p-4" >
+    <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">الرسائل</h2>
         <button
@@ -93,15 +102,19 @@ export default function ContactsAdmin() {
                 <td className="p-2 border">{c.phone}</td>
                 <td className="p-2 border">{c.email || "-"}</td>
                 <td className="p-2 border whitespace-pre-wrap">{c.message}</td>
-                <td className="p-2 border flex gap-2 ">
+                <td className="p-2 border flex gap-2">
                   <button
                     onClick={() => markRead(c.id)}
                     className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                   >
                     {c.is_read ? "مقروء" : "تحديد كمقروء"}
                   </button>
+
                   <button
-                    onClick={() => deleteContact(c.id)}
+                    onClick={() => {
+                      setSelectedContactId(c.id);
+                      setShowDeleteModal(true);
+                    }}
                     className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                   >
                     حذف
@@ -112,6 +125,16 @@ export default function ContactsAdmin() {
           </tbody>
         </table>
       )}
+
+      <ConfirmDeleteModal
+        open={showDeleteModal}
+        loading={deleteLoading}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setSelectedContactId(null);
+        }}
+        onConfirm={confirmDeleteContact}
+      />
     </div>
   );
 }

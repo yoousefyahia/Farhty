@@ -5,7 +5,9 @@ import api from "../api/axois";
 import toast from "react-hot-toast";
 import CompetitionCard from "../components/contests/CompetitionCard";
 import Pagination from "../components/Pagination";
-import ContestsFilter from"../components/contests/ContestsFilter";
+import ContestsFilter from "../components/contests/ContestsFilter";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+
 export default function CompetitionsPage() {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -20,11 +22,14 @@ export default function CompetitionsPage() {
   const [meta, setMeta] = useState({ current: 1, last: 1 });
   const [loadingContests, setLoadingContests] = useState(false);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedContestId, setSelectedContestId] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   useEffect(() => {
     if (!loading && user) {
       setLoadingContests(true);
 
-      // فقط أرسل الحقول غير الفارغة
       const params = { page: filters.page, per_page: 15 };
       if (filters.search) params.search = filters.search;
       if (filters.status) params.status = filters.status;
@@ -35,23 +40,28 @@ export default function CompetitionsPage() {
         .then((res) => {
           const data = res.data.data;
           setContests(data.data || []);
-          setMeta({ current: data.current_page, last: data.last_page });
-          setLoadingContests(false);
+          setMeta({
+            current: data.current_page,
+            last: data.last_page,
+          });
         })
-        .catch(() => {
-          toast.error("خطأ في جلب المسابقات");
-          setLoadingContests(false);
-        });
+        .catch(() => toast.error("خطأ في جلب المسابقات"))
+        .finally(() => setLoadingContests(false));
     }
   }, [loading, user, filters]);
 
-  const handleDelete = async (contestId) => {
+  const handleDelete = async () => {
     try {
-      await api.delete(`/admin/contests/${contestId}`);
-      setContests((prev) => prev.filter((c) => c.id !== contestId));
+      setDeleteLoading(true);
+      await api.delete(`/admin/contests/${selectedContestId}`);
+      setContests((prev) => prev.filter((c) => c.id !== selectedContestId));
       toast.success("تم حذف المسابقة بنجاح", { position: "top-center" });
     } catch {
       toast.error("حدث خطأ أثناء الحذف", { position: "top-center" });
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteModal(false);
+      setSelectedContestId(null);
     }
   };
 
@@ -60,9 +70,7 @@ export default function CompetitionsPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        المسابقات الحالية
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">المسابقات الحالية</h1>
 
       <ContestsFilter setFilters={setFilters} />
 
@@ -81,7 +89,10 @@ export default function CompetitionsPage() {
                 contest={contest}
                 onDetails={() => navigate(`/contests/${contest.id}/details`)}
                 onResults={() => navigate(`/contests/${contest.id}/results`)}
-                onDelete={() => handleDelete(contest.id)}
+                onDelete={() => {
+                  setSelectedContestId(contest.id);
+                  setShowDeleteModal(true);
+                }}
               />
             ))}
           </div>
@@ -89,13 +100,20 @@ export default function CompetitionsPage() {
           <Pagination
             current={meta.current}
             last={meta.last}
-            onChange={(page) =>
-              setFilters((prev) => ({ ...prev, page }))
-            }
+            onChange={(page) => setFilters((prev) => ({ ...prev, page }))}
           />
         </>
       )}
 
+      <ConfirmDeleteModal
+        open={showDeleteModal}
+        loading={deleteLoading}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setSelectedContestId(null);
+        }}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

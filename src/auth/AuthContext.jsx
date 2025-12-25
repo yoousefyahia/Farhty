@@ -21,7 +21,6 @@ useEffect(() => {
 }, []);
 
 
-  // memoize الـ value لتجنب rerender غير ضروري
   const contextValue = useMemo(() => ({ user, setUser, loading }), [user, loading]);
 
   return (

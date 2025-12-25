@@ -51,20 +51,20 @@ export default function UserDetail({ userId, onClose }) {
             <h2 className="text-2xl font-bold text-center">{user.name}</h2>
 
             <div className="grid grid-cols-2 gap-2">
-              <p><strong>Role:</strong></p>
+              <p><strong>الدور:</strong></p>
               <p>{user.role}</p>
 
-              <p><strong>Phone:</strong></p>
+              <p><strong>الرقم:</strong></p>
               <p>{user.phone}</p>
 
-              <p><strong>Gender:</strong></p>
+              <p><strong>النوع:</strong></p>
               <p>{user.gender}</p>
 
-              <p><strong>Verified:</strong></p>
-              <p>{user.verified ? "Yes" : "No"}</p>
+              <p><strong>التوثيق:</strong></p>
+              <p>{user.verified ? "نعم" : "لا"}</p>
 
-              <p><strong>Completed:</strong></p>
-              <p>{user.completed ? "Yes" : "No"}</p>
+              <p><strong>مكتمل:</strong></p>
+              <p>{user.completed ? "نعم" : "لا"}</p>
 
               <p><strong>Created At:</strong></p>
               <p>{new Date(user.created_at).toLocaleString()}</p>

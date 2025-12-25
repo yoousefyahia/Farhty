@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Pagination from "../components/Pagination";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
-// تعريف الـ schema
+// schema
 const schema = yup.object().shape({
   name: yup.string().required("الاسم مطلوب"),
   phone: yup.string().matches(/^\d{10,11}$/, "رقم الهاتف غير صحيح").required(),
@@ -27,6 +28,11 @@ export default function AdminsPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editAdminData, setEditAdminData] = useState(null);
+
+  // states الحذف
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [adminToDelete, setAdminToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(schema)
@@ -60,17 +66,6 @@ export default function AdminsPage() {
       .catch(() => toast.error("حدث خطأ أثناء الإضافة"));
   };
 
-  const handleDeleteAdmin = (id) => {
-    toast.promise(
-      api.delete(`/admin/admins/${id}`),
-      {
-        loading: "جاري حذف المسؤول...",
-        success: "تم حذف المسؤول",
-        error: "حدث خطأ أثناء الحذف"
-      }
-    ).then(() => fetchAdmins(currentPage));
-  };
-
   const handleViewAdmin = (id) => {
     setLoading(true);
     api.get(`/admin/admins/${id}`)
@@ -84,7 +79,6 @@ export default function AdminsPage() {
 
   const handleEditAdmin = (admin) => {
     setEditAdminData(admin);
-    // تعبئة الفورم بالبيانات الحالية
     setValue("name", admin.name);
     setValue("phone", admin.phone);
     setValue("password", "");
@@ -100,6 +94,23 @@ export default function AdminsPage() {
         fetchAdmins(currentPage);
       })
       .catch(() => toast.error("حدث خطأ أثناء التحديث"));
+  };
+
+  const handleDeleteAdmin = async () => {
+    if (!adminToDelete) return;
+
+    try {
+      setDeleteLoading(true);
+      await api.delete(`/admin/admins/${adminToDelete}`);
+      toast.success("تم حذف المسؤول");
+      fetchAdmins(currentPage);
+    } catch {
+      toast.error("حدث خطأ أثناء الحذف");
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteModal(false);
+      setAdminToDelete(null);
+    }
   };
 
   if (loading) return <p className="text-center">جاري تحميل البيانات...</p>;
@@ -216,7 +227,10 @@ export default function AdminsPage() {
                 </button>
 
                 <button
-                  onClick={() => handleDeleteAdmin(admin.id)}
+                  onClick={() => {
+                    setAdminToDelete(admin.id);
+                    setShowDeleteModal(true);
+                  }}
                   className="bg-red-600 text-white px-2 py-1 rounded"
                 >
                   حذف
@@ -240,7 +254,7 @@ export default function AdminsPage() {
 
           <div className="bg-white p-6 rounded w-96 relative z-10 shadow-lg">
             <h3 className="text-lg font-bold mb-4">تفاصيل المسؤول</h3>
-            <p><strong>ID:</strong> {selectedAdmin.id}</p>
+            <p><strong>معرف المستخدم:</strong> {selectedAdmin.id}</p>
             <p><strong>الاسم:</strong> {selectedAdmin.name}</p>
             <p><strong>الهاتف:</strong> {selectedAdmin.phone}</p>
             <p><strong>مسؤول:</strong> {selectedAdmin.is_admin ? "نعم" : "لا"}</p>
@@ -321,6 +335,14 @@ export default function AdminsPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Modal */}
+      <ConfirmDeleteModal
+        open={showDeleteModal}
+        loading={deleteLoading}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAdmin}
+      />
 
     </div>
   );
