@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../api/axois";
 import UsersFilter from "../components/users/UsersFilter";
+import DeleteUser from "../components/users/DeletUser";
 import UpdateUser from "../components/users/UpdateUser";
 import Pagination from "../components/Pagination";
 import UserDetail from "../components/users/UserDetail";
-import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 export default function AllUser() {
   const [users, setUsers] = useState([]);
@@ -16,13 +16,9 @@ export default function AllUser() {
   });
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // states الحذف
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // filters من الـ URL مباشرة
   const filters = {
     role: searchParams.get("role") || "",
     search: searchParams.get("search") || "",
@@ -56,23 +52,6 @@ export default function AllUser() {
     const timer = setTimeout(fetchUsers, 400);
     return () => clearTimeout(timer);
   }, [searchParams]);
-
-  // دالة الحذف الجديدة
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-
-    try {
-      setDeleteLoading(true);
-      await axios.delete(`/admin/users/${userToDelete}`);
-      fetchUsers();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDeleteLoading(false);
-      setShowDeleteModal(false);
-      setUserToDelete(null);
-    }
-  };
 
   return (
     <div className="p-4">
@@ -113,15 +92,7 @@ export default function AllUser() {
                     <td className="p-2 border whitespace-nowrap">
                       <div className="flex gap-2">
                         <UpdateUser user={user} onSuccess={fetchUsers} />
-                        <button
-                          onClick={() => {
-                            setUserToDelete(user.id);
-                            setShowDeleteModal(true);
-                          }}
-                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                        >
-                          حذف
-                        </button>
+                        <DeleteUser id={user.id} onSuccess={fetchUsers} />
                         <button
                           onClick={() => setSelectedUser(user.id)}
                           className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
@@ -152,14 +123,6 @@ export default function AllUser() {
           onClose={() => setSelectedUser(null)}
         />
       )}
-
-      {/* Delete Modal */}
-      <ConfirmDeleteModal
-        open={showDeleteModal}
-        loading={deleteLoading}
-        onCancel={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteUser}
-      />
     </div>
   );
 }
