@@ -1,16 +1,44 @@
-# React + Vite
+# Farhty Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive React-based web application designed for managing users, competitions, and administrative tasks. This platform features a responsive dashboard, robust user management system, and tools for handling content like competitions and privacy policies.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Dashboard & Analytics**: Visual overview of platform statistics using `recharts`.
+- **User Management**:
+  - View all registered users.
+  - User profiles and editing capabilities.
+  - Admin management interface.
+- **Competition Management**: Tools to manage competitions and contests.
+- **Content Administration**:
+  - Manage contact inquiries.
+  - Privacy policy updates.
+- **Authentication**: Secure login system.
+- **Responsive Design**: Built with Tailwind CSS and Styled Components for a modern UI.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Styling**: 
+  - [Tailwind CSS](https://tailwindcss.com/)
+  - [Styled Components](https://styled-components.com/)
+- **Routing**: [React Router](https://reactrouter.com/)
+- **State/Form Management**: [React Hook Form](https://react-hook-form.com/) + [Yup](https://github.com/jquense/yup)
+- **HTTP Client**: [Axios](https://axios-http.com/)
+- **Visualization**: [Recharts](https://recharts.org/)
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+├── api/            # API interaction logic
+├── auth/           # Authentication related logic/components
+├── components/     # Reusable UI components
+├── pages/          # Application pages (Dashboard, Login, Profiles, etc.)
+├── routes/         # Route definitions
+├── styles/         # Global styles
+└── App.jsx         # Main application component
+```
+---
+Built with ❤️ using React and Vite.
