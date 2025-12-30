@@ -40,5 +40,3 @@ src/
 ├── styles/         # Global styles
 └── App.jsx         # Main application component
 ```
----
-Built with ❤️ using React and Vite.
